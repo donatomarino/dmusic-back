@@ -41,7 +41,8 @@ class AuthController extends Controller
                 'success' => true,
                 'message' => 'Usuario autenticado correctamente',
                 'access_token' => $token,
-                'token_type' => 'Bearer'
+                'token_type' => 'Bearer',
+                'initial_name' => $user->full_name[0]
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -106,7 +107,6 @@ class AuthController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $user,
                 'message' => 'Usuario registrado correctamente'
             ], 201);
         } catch (Exception $e) {

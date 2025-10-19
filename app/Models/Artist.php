@@ -9,6 +9,6 @@ class Artist extends Model
 {
     public function songs(): HasMany
     {
-        return $this->hasMany(Song::class);
+        return $this->hasMany(Song::class, 'id_artist');
     }
 }

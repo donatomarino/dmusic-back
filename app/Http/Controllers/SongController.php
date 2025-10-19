@@ -12,7 +12,7 @@ class SongController extends Controller
     public function index()
     {
         try {
-            $songs = Song::all();
+            $songs = Song::with('artist')->get()->makeHidden(['id_artist', 'created_at', 'updated_at', 'genre']);
             return response()->json([
                 'success' => true,
                 'data' => $songs
@@ -29,8 +29,8 @@ class SongController extends Controller
     public function searchSong(Request $request)
     {
         try {
-            $query = $request->input('query');
-            $songs = Song::where('title', 'LIKE', "%{$query}%")->get();
+            $song = $request->input('song');
+            $songs = Song::with('artist')->where('title', 'LIKE', "%{$song}%")->get()->makeHidden(['created_at', 'updated_at', 'genre', 'id_artist']);
             if ($songs) {
                 return response()->json([
                     'success' => true,
@@ -55,12 +55,15 @@ class SongController extends Controller
     public function playSong($id)
     {
         try {
-            $song = Song::find($id);
+            $first = Song::select('title','url','id')->find($id);
+            $others = Song::select('title','url','id')->where('id', '!=', $id)->orderBy('id','asc')->get();
+
+            $songs = $first ? collect([$first])->merge($others) : $others;
 
             // No hay condiciones en cuanto se puede hacer esta solicitud solamente si la canción está en la base de datos y aparece en la app.
             return response()->json([
                 'success' => true,
-                'data' => $song
+                'data' => $songs
             ], 200);
         } catch (Exception $e) {
             return response()->json([

@@ -11,7 +11,7 @@ class ArtistController extends Controller
     public function index()
     {
         try {
-            $artists = Artist::all();
+            $artists = Artist::all()->makeHidden(['created_at', 'updated_at']);
             return response()->json([
                 'success' => true,
                 'data' => $artists
