@@ -19,7 +19,8 @@ class ArtistController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al obtener los artistas'
+                'message' => 'Error inesperado al obtener los artistas',
+                'error' => true
             ], 500);
         }
     }
@@ -34,10 +35,11 @@ class ArtistController extends Controller
                 'success' => true,
                 'data' => $artist
             ], 200);
-        } catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al reproducir el artista'
+                'message' => 'Error inesperado al reproducir el artista',
+                'error' => true
             ], 500);
         }
     }

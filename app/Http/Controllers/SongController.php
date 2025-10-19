@@ -20,7 +20,8 @@ class SongController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al obtener las canciones'
+                'message' => 'Error inesperado al obtener las canciones',
+                'error' => true
             ], 500);
         }
     }
@@ -38,13 +39,15 @@ class SongController extends Controller
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Canción no encontrada'
+                    'message' => 'Canción no encontrada',
+                    'error' => true
                 ], 404);
             }
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al buscar la canción'
+                'message' => 'Error inesperado al buscar la canción',
+                'error' => true
             ], 500);
         }
     }
@@ -62,7 +65,8 @@ class SongController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al reproducir la canción'
+                'message' => 'Error inesperado al reproducir la canción',
+                'error' => true
             ], 500);
         }
     }
@@ -77,7 +81,8 @@ class SongController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al reproducir la librería'
+                'message' => 'Error inesperado al reproducir la librería',
+                'error' => true
             ], 500);
         }
     }
@@ -96,13 +101,15 @@ class SongController extends Controller
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'La canción ya está en favoritos'
+                    'message' => 'La canción ya está en favoritos',
+                    'error' => true
                 ], 409);
             }
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al agregar la canción a favoritos'
+                'message' => 'Error inesperado al agregar la canción a favoritos',
+                'error' => true
             ], 500);
         }
     }
@@ -118,13 +125,15 @@ class SongController extends Controller
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'La canción no está en favoritos'
+                    'message' => 'La canción no está en favoritos',
+                    'error' => true
                 ], 404);
             }
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al eliminar la canción de favoritos'
+                'message' => 'Error inesperado al eliminar la canción de favoritos',
+                'error' => true
             ], 500);
         }
     }
@@ -138,10 +147,11 @@ class SongController extends Controller
                 'success' => true,
                 'data' => $songs
             ], 200);
-        } catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al obtener las canciones favoritas'
+                'message' => 'Error inesperado al obtener las canciones favoritas',
+                'error' => true
             ], 500);
         }
     }
