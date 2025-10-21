@@ -17,7 +17,7 @@ class PlaylistController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al obtener las playlists',
+                'message' => 'Error inesperado al obtener las playlists: ' . $e->getMessage(),
                 'error' => true
             ], 500);
         }
@@ -36,7 +36,7 @@ class PlaylistController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al reproducir la playlist',
+                'message' => 'Error inesperado al reproducir la playlist: ' . $e->getMessage(),
                 'error' => true
             ], 500);
         }

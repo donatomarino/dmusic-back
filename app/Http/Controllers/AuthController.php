@@ -42,12 +42,12 @@ class AuthController extends Controller
                 'message' => 'Usuario autenticado correctamente',
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'initial_name' => $user->full_name[0]
+                'initial_name' => $user->full_name[0],
             ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al autenticar el usuario',
+                'message' => 'Error inesperado al autenticar el usuario: ' . $e->getMessage(),
                 'error' => true
             ], 500);
         }
@@ -112,7 +112,7 @@ class AuthController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => 'Error inesperado al registrar el usuario: ' . $e->getMessage(),
                 'error' => true
             ], 500);
         }

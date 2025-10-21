@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Song;
 use App\Models\User;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class SongController extends Controller
 {
@@ -20,33 +21,28 @@ class SongController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al obtener las canciones',
+                'message' => 'Error inesperado al obtener las canciones: ' . $e->getMessage(),
                 'error' => true
             ], 500);
         }
     }
 
-    public function searchSong(Request $request)
+    public function searchSong($id)
     {
         try {
-            $song = $request->input('song');
-            $songs = Song::with('artist')->where('title', 'LIKE', "%{$song}%")->get()->makeHidden(['created_at', 'updated_at', 'genre', 'id_artist']);
-            if ($songs) {
-                return response()->json([
-                    'success' => true,
-                    'data' => $songs
-                ], 200);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Canción no encontrada',
-                    'error' => true
-                ], 404);
-            }
+            $response = true;
+            $songs = Song::with('artist')->where('title', 'ILIKE', "%{$id}%")->get()->makeHidden(['created_at', 'updated_at', 'genre', 'id_artist']);
+
+            count($songs) === 0 && $response = false;
+
+            return response()->json([
+                'success' => $response,
+                'data' => $songs
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al buscar la canción',
+                'message' => 'Error inesperado al buscar la canción: ' . $e->getMessage(),
                 'error' => true
             ], 500);
         }
@@ -55,8 +51,8 @@ class SongController extends Controller
     public function playSong($id)
     {
         try {
-            $first = Song::select('title','url','id')->find($id);
-            $others = Song::select('title','url','id')->where('id', '!=', $id)->orderBy('id','asc')->get();
+            $first = Song::select('title', 'url', 'id')->find($id);
+            $others = Song::select('title', 'url', 'id')->where('id', '!=', $id)->orderBy('id', 'asc')->get();
 
             $songs = $first ? collect([$first])->merge($others) : $others;
 
@@ -68,7 +64,7 @@ class SongController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al reproducir la canción',
+                'message' => 'Error inesperado al reproducir la canción: ' . $e->getMessage(),
                 'error' => true
             ], 500);
         }
@@ -84,44 +80,46 @@ class SongController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al reproducir la librería',
+                'message' => 'Error inesperado al reproducir la librería: ' . $e->getMessage(),
                 'error' => true
             ], 500);
         }
     }
 
-    public function addFavoriteSong(Request $request)
+    public function addFavoriteSong($id)
     {
         try {
-            $user = User::find($request->user_id);
-            $attached = $user->songs()->attach($request->song_id);
-
-            if ($attached) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Canción agregada a favoritos'
-                ], 201);
-            } else {
+            /** @var \App\Models\User $user */ // Para que no marque error en el IDE
+            $user = Auth::user();
+            $song = $user->songs()->where('song_id', $id)->first();
+            if ($song) {
                 return response()->json([
                     'success' => false,
                     'message' => 'La canción ya está en favoritos',
-                    'error' => true
+                    'error' => 409
                 ], 409);
             }
+
+            $user->songs()->attach($id);
+            return response()->json([
+                'success' => true,
+                'message' => 'Canción agregada a favoritos'
+            ], 201);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al agregar la canción a favoritos',
+                'message' => 'Error inesperado al agregar la canción a favoritos: ' . $e->getMessage(),
                 'error' => true
             ], 500);
         }
     }
 
-    public function deleteFavoriteSong(Request $request)
+    public function deleteFavoriteSong($id)
     {
         try {
-            $user = User::find($request->user_id);
-            $deleted = $user->songs()->detach($request->song_id);
+            /** @var \App\Models\User $user */ // Para que no marque error en el IDE
+            $user = Auth::user();
+            $deleted = $user->songs()->detach($id);
 
             if ($deleted) {
                 return response(null, 204);
@@ -135,17 +133,18 @@ class SongController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al eliminar la canción de favoritos',
+                'message' => 'Error inesperado al eliminar la canción de favoritos: ' . $e->getMessage(),
                 'error' => true
             ], 500);
         }
     }
 
-    public function getFavoriteSongs($id)
+    public function getFavoriteSongs()
     {
         try {
-            $user = User::find($id);
-            $songs = $user->songs->get();
+            /** @var \App\Models\User $user */ // Para que no marque error en el IDE
+            $user = Auth::user();
+            $songs = $user->songs()->with('artist')->get()->makeHidden(['pivot', 'created_at', 'updated_at', 'genre', 'id_artist']);
             return response()->json([
                 'success' => true,
                 'data' => $songs
@@ -153,7 +152,7 @@ class SongController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error inesperado al obtener las canciones favoritas',
+                'message' => 'Error inesperado al obtener las canciones favoritas: ' . $e->getMessage(),
                 'error' => true
             ], 500);
         }

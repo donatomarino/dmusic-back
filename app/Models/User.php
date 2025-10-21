@@ -48,6 +48,6 @@ class User extends Authenticatable
 
     public function songs(): BelongsToMany
     {
-        return $this->belongsToMany(Song::class);
+        return $this->belongsToMany(Song::class, 'users_songs', 'user_id', 'song_id');
     }
 }
