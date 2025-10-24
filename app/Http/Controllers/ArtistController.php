@@ -28,12 +28,11 @@ class ArtistController extends Controller
     public function playArtist($id)
     {
         try {
-            $artist = Artist::find($id);
+            $songs = Artist::find($id)->songs()->select('id', 'title', 'url')->get();
 
-            // No hay condiciones en cuanto se puede hacer esta solicitud solamente si la canción está en la base de datos y aparece en la app.
             return response()->json([
                 'success' => true,
-                'data' => $artist
+                'data' => $songs
             ], 200);
         } catch (Exception $e) {
             return response()->json([
