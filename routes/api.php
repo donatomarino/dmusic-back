@@ -17,9 +17,9 @@ Route::get('dmusic/get-artists', [ArtistController::class, 'index']);
 Route::post('dmusic/search-song/{id}', [SongController::class, 'searchSong']);
 
 Route::middleware('auth:sanctum')->group(function () {
-  Route::put('dmusic/update-user', [AuthController::class, 'update']); //
   Route::post('dmusic/play-song/{id}', [SongController::class, 'playSong']);
   Route::post('dmusic/play-artist/{id}', [ArtistController::class, 'playArtist']);
+  Route::post('dmusic/play-library/{id}', [SongController::class, 'playFavoriteSong']);
   Route::post('dmusic/get-favorite-songs', [SongController::class, 'getFavoriteSongs']);
   Route::post('dmusic/add-favorite-song/{id}', [SongController::class, 'addFavoriteSong']);
   Route::delete('dmusic/delete-favorite-song/{id}', [SongController::class, 'deleteFavoriteSong']);

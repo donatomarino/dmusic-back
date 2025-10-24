@@ -70,13 +70,22 @@ class SongController extends Controller
         }
     }
 
-    public function playLibrary(Request $request)
+    public function playFavoriteSong($id)
     {
         try {
-            $user = User::find($request->user_id);
-            $songs = Song::with('artist')->get();
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            $songs = $user->songs()->with('artist')->get()->makeHidden(['pivot', 'created_at', 'updated_at', 'genre', 'id_artist']);
 
-            // $users_songs = 
+            // Reordenar: primero la canción con el id dado, luego el resto
+            $first = $songs->where('id', $id);
+            $others = $songs->where('id', '!=', $id);
+            $orderedSongs = $first->concat($others)->values();
+
+            return response()->json([
+                'success' => true,
+                'data' => $orderedSongs
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
