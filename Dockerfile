@@ -29,9 +29,13 @@ COPY . .
 # Instalar dependencias PHP
 RUN composer install --optimize-autoloader --no-dev
 
+# Crear enlace simbólico para storage
+RUN php artisan storage:link
+
 # Configurar permisos
 RUN chmod -R 755 /var/www/storage \
-    && chmod -R 755 /var/www/bootstrap/cache
+    && chmod -R 755 /var/www/bootstrap/cache \
+    && chmod -R 755 /var/www/public/storage
 
 # Exponer puerto
 EXPOSE 8000
