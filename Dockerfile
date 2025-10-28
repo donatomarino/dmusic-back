@@ -23,26 +23,19 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Configurar directorio de trabajo
 WORKDIR /var/www
 
-# Copiar archivos del proyecto
+# Copiar archivos del proyecto (incluyendo archivos de música)
 COPY . .
 
 # Instalar dependencias PHP
 RUN composer install --optimize-autoloader --no-dev
 
-# Generar clave de aplicación y crear enlace simbólico
-RUN cp .env.example .env || true
-RUN php artisan key:generate --force
-RUN php artisan storage:link
-
 # Configurar permisos
 RUN chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/bootstrap/cache \
-    && chmod -R 755 /var/www/public/storage \
-    && chown -R www-data:www-data /var/www/storage \
-    && chown -R www-data:www-data /var/www/public
+    && chmod -R 755 /var/www/public
 
 # Exponer puerto
 EXPOSE 8000
 
-# Comando de inicio - Servidor PHP integrado
-CMD php artisan serve --host=0.0.0.0 --port=8000
+# Comando de inicio con enlace simbólico en runtime
+CMD php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8000
