@@ -99,7 +99,7 @@ class AuthController extends Controller
                 'password.min' => 'La password debe tener al menos 8 caracteres',
             ]);
 
-            $user = User::create([
+            User::create([
                 'full_name' => $userData['full_name'],
                 'email' => $userData['email'],
                 'password' => Hash::make($userData['password']),

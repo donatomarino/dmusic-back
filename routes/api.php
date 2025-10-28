@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
   Route::post('dmusic/login', [AuthController::class, 'index']);
   Route::post('dmusic/register', [AuthController::class, 'register']);
-  Route::post('dmusic/recovery-password', [AuthController:: class, 'forgotPassword']);
-  Route::post('dmusic/reset-password', [AuthController:: class, 'resetPassword']);
+  // Route::post('dmusic/recovery-password', [AuthController:: class, 'forgotPassword']);
+  // Route::post('dmusic/reset-password', [AuthController:: class, 'resetPassword']);
 });
 
 Route::get('dmusic/get-songs', [SongController::class, 'index']);
