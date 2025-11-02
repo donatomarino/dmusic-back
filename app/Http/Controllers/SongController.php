@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Song;
-use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Artist;
-use Illuminate\Http\Request;
 use Exception;
 
 class ArtistController extends Controller
