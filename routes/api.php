@@ -7,14 +7,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
   Route::post('dmusic/login', [AuthController::class, 'index']);
-  Route::post('dmusic/register', [AuthController::class, 'register']);
-  // Route::post('dmusic/recovery-password', [AuthController:: class, 'forgotPassword']);
-  // Route::post('dmusic/reset-password', [AuthController:: class, 'resetPassword']);
+  Route::post('dmusic/register', [AuthController::class, 'store']);
 });
 
 Route::get('dmusic/get-songs', [SongController::class, 'index']);
 Route::get('dmusic/get-artists', [ArtistController::class, 'index']);
-Route::post('dmusic/search-song/{id}', [SongController::class, 'searchSong']);
+Route::post('dmusic/search-song', [SongController::class, 'searchSong']);
 
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('dmusic/play-song/{id}', [SongController::class, 'playSong']);

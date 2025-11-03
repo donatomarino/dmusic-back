@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Song;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SongController extends Controller
@@ -25,11 +26,11 @@ class SongController extends Controller
         }
     }
 
-    public function searchSong($id)
+    public function searchSong(Request $request)
     {
         try {
             $response = true;
-            $songs = Song::with('artist')->where('title', 'ILIKE', "%{$id}%")->get()->makeHidden(['created_at', 'updated_at', 'genre', 'id_artist']);
+            $songs = Song::with('artist')->where('title', 'LIKE', "%$request->song_name%")->get()->makeHidden(['created_at', 'updated_at', 'genre', 'id_artist']);
 
             count($songs) === 0 && $response = false;
 
