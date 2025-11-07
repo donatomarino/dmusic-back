@@ -9,6 +9,14 @@ use Exception;
 
 class AuthController extends Controller
 {
+    /**
+     * Login usuario
+     * @author Donato Marino
+     * 
+     * @param Request $request
+     * 
+     * @return JsonResponse
+     */
     public function index(Request $request)
     {
         try {
@@ -50,8 +58,17 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Registrar usuario
+     * @author Donato Marino
+     * 
+     * @param Request $request
+     * 
+     * @return JsonResponse
+     */
     public function store(Request $request)
     {
+        // Comprobar campos y reglas de validación
         try {
             $userData = $request->validate([
                 'full_name' => 'required|string',
@@ -66,6 +83,7 @@ class AuthController extends Controller
                 'password.min' => 'La password debe tener al menos 8 caracteres',
             ]);
 
+            // Crear usuario
             User::create([
                 'full_name' => $userData['full_name'],
                 'email' => $userData['email'],

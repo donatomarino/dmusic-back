@@ -7,6 +7,12 @@ use Exception;
 
 class ArtistController extends Controller
 {
+    /**
+     * Listar todos los artistas
+     * @author Donato Marino
+     * 
+     * @return JsonResponse
+     */
     public function index()
     {
         try {
@@ -24,9 +30,18 @@ class ArtistController extends Controller
         }
     }
 
+    /**
+     * Reproducir todas las canciones de un artista
+     * @author Donato Marino
+     * 
+     * @param int $id
+     * 
+     * @return JsonResponse
+     */
     public function playArtist($id)
     {
         try {
+            // Obtener el id, título y url de las canciones del artista
             $songs = Artist::find($id)->songs()->select('id', 'title', 'url')->get();
 
             return response()->json([
