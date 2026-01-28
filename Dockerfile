@@ -35,7 +35,7 @@ RUN chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/public
 
 # Exponer puerto
-EXPOSE 8000
+EXPOSE 10000
 
 # Comando de inicio con enlace simbólico en runtime
 CMD php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8000
