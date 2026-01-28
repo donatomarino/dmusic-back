@@ -31,7 +31,7 @@ class SongController extends Controller
     {
         try {
             $response = true;
-            $songs = Song::with('artist')->where('title', 'ILIKE', "%{$id}%")->get()->makeHidden(['created_at', 'updated_at', 'genre', 'id_artist']);
+            $songs = Song::with('artist')->whereRaw('LOWER(title) LIKE ?', ["%".strtolower($id)."%"])->get()->makeHidden(['created_at', 'updated_at', 'genre', 'id_artist']);
 
             count($songs) === 0 && $response = false;
 
