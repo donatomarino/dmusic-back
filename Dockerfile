@@ -1,41 +1,29 @@
 FROM php:8.2-cli
 
-# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libpq-dev \
     zip \
-    unzip
+    unzip \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Limpiar caché
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN docker-php-ext-install \
+    pdo pdo_mysql \
+    mbstring exif pcntl bcmath gd
 
-# Instalar extensiones PHP
-RUN docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
-
-# Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Configurar directorio de trabajo
 WORKDIR /var/www
-
-# Copiar archivos del proyecto (incluyendo archivos de música)
 COPY . .
 
-# Instalar dependencias PHP
 RUN composer install --optimize-autoloader --no-dev
 
-# Configurar permisos
-RUN chmod -R 755 /var/www/storage \
-    && chmod -R 755 /var/www/bootstrap/cache \
-    && chmod -R 755 /var/www/public
+RUN chmod -R 775 storage bootstrap/cache
 
-# Exponer puerto
-EXPOSE 10000
+EXPOSE 8000
 
-# Comando de inicio con enlace simbólico en runtime
-CMD php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8000
+CMD php artisan storage:link || true \
+ && php artisan serve --host=0.0.0.0 --port=8000
