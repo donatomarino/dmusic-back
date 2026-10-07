@@ -2,9 +2,7 @@
 
 ## 🌐 Despliegue
 
-- API en producción: https://dmusic-front.vercel.app/
-
-API REST desarrollado con Laravel para un sistema de música con autenticación de usuarios, catálogo de canciones, artistas y favoritos. El proyecto está pensado para servir como base para una app tipo streaming o reproductor musical, con endpoints públicos y rutas protegidas por token con Sanctum.
+- Librería músical en producción: https://dmusic-front.vercel.app/
 
 ## Descripción general
 
@@ -151,47 +149,95 @@ curl -X POST http://localhost:8000/api/dmusic/add-favorite-song/1 \
 
 ## Instalación y configuración
 
-### Requisitos
+### 1. Requisitos del sistema
 
-- PHP 8.2+
+- PHP 8.1 o superior
+- Node.js 18 o superior
+- PostgreSQL 14 o superior
 - Composer
-- Node.js y npm (por el frontend Vite y recursos frontend del proyecto)
-- Base de datos SQLite para desarrollo local o PostgreSQL para Docker
+- npm (incluido con Node.js)
 
-### 1. Clonar el proyecto
+### 2. Preparación del proyecto
+
+1. Descarga el archivo ZIP del proyecto.
+2. Extrae su contenido en la carpeta donde quieras instalarlo.
+3. Abre una terminal y navega hasta la carpeta del proyecto:
 
 ```bash
-git clone <url-del-repositorio>
+cd /ruta/donde/extraiste/el/proyecto
+```
+
+### 3. Instalación del Backend (Laravel)
+
+#### 3.1 Acceder al backend
+
+```bash
 cd dmusic-back
 ```
 
-### 2. Instalar dependencias
+#### 3.2 Instalar dependencias
 
 ```bash
 composer install
 ```
 
-### 3. Configurar variables de entorno
-
-Copia el ejemplo:
+#### 3.3 Crear archivo .env
 
 ```bash
 cp .env.example .env
 ```
 
-Si trabajas en local con SQLite, la configuración por defecto del proyecto ya está preparada para ello. Si no se genera la clave de la app, haz lo siguiente:
+#### 3.4 Configurar el archivo .env
+
+Abre el archivo `.env` y asegúrate de que los valores principales estén así:
+
+```env
+APP_NAME=DMusic
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=dmusic_db
+DB_USERNAME=postgres
+DB_PASSWORD=
+
+CORS_ALLOWED_ORIGINS=http://localhost:5173
+```
+
+Notas importantes:
+
+- Si tu PostgreSQL tiene contraseña, colócala en `DB_PASSWORD`.
+- No es necesario modificar otras variables del `.env.example` salvo que tengas requisitos especiales.
+- El valor `CORS_ALLOWED_ORIGINS=http://localhost:5173` es correcto para el frontend.
+
+#### 3.5 Generar clave de aplicación
 
 ```bash
 php artisan key:generate
 ```
 
-### 4. Ejecutar migraciones
+#### 3.6 Crear la base de datos
+
+Antes de ejecutar las migraciones, asegúrate de que la base de datos `dmusic_db` exista en PostgreSQL.
+
+Si no la tienes creada, crea la base desde pgAdmin o desde la línea de comandos con tu cliente PostgreSQL.
+
+#### 3.7 Ejecutar migraciones y seeds
 
 ```bash
-php artisan migrate
+php artisan migrate --seed
 ```
 
-### 5. Iniciar el servidor
+#### 3.8 Crear enlace simbólico de almacenamiento
+
+```bash
+php artisan storage:link
+```
+
+#### 3.9 Iniciar el servidor del backend
 
 ```bash
 php artisan serve
@@ -203,6 +249,21 @@ La API quedará disponible normalmente en:
 http://localhost:8000
 ```
 
+### 4. Importación de datos (Canciones y Artistas)
+
+Este script es obligatorio para que la aplicación muestre datos.
+
+1. Abre PostgreSQL o pgAdmin (o tu cliente de base de datos preferido).
+2. Conéctate usando los datos del `.env`:
+   - Host: `127.0.0.1`
+   - Puerto: `5432`
+   - Usuario: `postgres`
+   - Contraseña: la que corresponda
+3. Abre el archivo `dmusic-back/script.sql`.
+4. Copia todo su contenido y pégalo en una consulta nueva.
+5. Ejecuta el script.
+6. Verifica que las tablas `artists` y `songs` tengan registros.
+
 ## Uso con Docker
 
 El proyecto incluye un `docker-compose.yml` con un contenedor para la app y otro para PostgreSQL.
@@ -211,7 +272,14 @@ El proyecto incluye un `docker-compose.yml` con un contenedor para la app y otro
 docker compose up --build
 ```
 
-Esto levanta la API y una base de datos PostgreSQL en el puerto `5432`.
+Esto levanta la API y la base de datos PostgreSQL en los puertos `8000` y `5432` respectivamente.
+
+Si es la primera vez, puede que necesites ejecutar:
+
+```bash
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
+```
 
 ## Notas de desarrollo
 
