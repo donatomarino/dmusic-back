@@ -238,6 +238,6 @@ php artisan test
 - Ampliar la cobertura de pruebas para auth, canciones y favoritos.
 - Separar flujo de reproducción y favoritos con servicios más mantenibles.
 
-## Licencia
+## Autor
 
-Este proyecto se distribuye bajo la licencia MIT.
+Donato Marino
