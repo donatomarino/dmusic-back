@@ -213,14 +213,6 @@ docker compose up --build
 
 Esto levanta la API y una base de datos PostgreSQL en el puerto `5432`.
 
-## Pruebas
-
-El proyecto incluye PHPUnit y Laravel Testbench-style setup. Para ejecutar la suite:
-
-```bash
-php artisan test
-```
-
 ## Notas de desarrollo
 
 - Las rutas de autenticación están protegidas con middleware `guest` para registro y login.
