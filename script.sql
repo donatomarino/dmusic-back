@@ -1,5 +1,3 @@
-USE dmusic_db;
-
 -- Insertamos artistas
 INSERT INTO Artists (full_name, avatar) VALUES
 ('Bad Bunny', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjPfQxfIDmlM8kL_JN2sTrArKznP__WLxIXw&s'),

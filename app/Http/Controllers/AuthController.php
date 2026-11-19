@@ -8,10 +8,18 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\JsonResponse;
 use Exception;
+
 
 class AuthController extends Controller
 {
+    /**
+     * Autenticar a un usuario y generar su token de acceso.
+     *
+     * @param Request $request Contiene el correo electrónico y la contraseña
+     * @return JsonResponse
+     */
     public function index(Request $request)
     {
         try {
@@ -53,36 +61,12 @@ class AuthController extends Controller
         }
     }
 
-    // public function update(Request $request)
-    // {
-    //     try {
-    //         $user = Auth::user();
-
-    //         $status = Password::sendResetLink([
-    //             'email' => $user->email
-    //         ]);
-
-    //         if ($status === Password::RESET_LINK_SENT) {
-    //             return response()->json([
-    //                 'success' => true,
-    //                 'message' => __($status)
-    //             ], 200);
-    //         } else {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => __($status),
-    //                 'error' => true
-    //             ], 400);
-    //         }
-    //     } catch (Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Error inesperado al actualizar el usuario',
-    //             'error' => true
-    //         ], 500);
-    //     }
-    // }
-
+    /**
+     * Registrar un usuario nuevo.
+     *
+     * @param Request $request Contiene el nombre, correo electrónico y contraseña
+     * @return JsonResponse
+     */
     public function store(Request $request)
     {
         try {
@@ -117,6 +101,36 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    // public function update(Request $request)
+    // {
+    //     try {
+    //         $user = Auth::user();
+
+    //         $status = Password::sendResetLink([
+    //             'email' => $user->email
+    //         ]);
+
+    //         if ($status === Password::RESET_LINK_SENT) {
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'message' => __($status)
+    //             ], 200);
+    //         } else {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => __($status),
+    //                 'error' => true
+    //             ], 400);
+    //         }
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error inesperado al actualizar el usuario',
+    //             'error' => true
+    //         ], 500);
+    //     }
+    // }
 
     // public function forgotPassword(Request $request)
     // {

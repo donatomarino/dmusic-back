@@ -37,16 +37,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
-
     public function songs(): BelongsToMany
     {
         return $this->belongsToMany(Song::class, 'users_songs', 'user_id', 'song_id');
