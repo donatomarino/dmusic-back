@@ -2,7 +2,7 @@
 
 ## 🌐 Despliegue
 
-- Librería músical en producción: https://dmusic-front.vercel.app/
+- Librería musical en producción: https://dmusic-front.vercel.app/
 
 ## Descripción general
 
@@ -13,8 +13,7 @@ DMusic es una API construida sobre Laravel 12, con autenticación por tokens usa
 - PHP 8.2
 - Laravel 12
 - Laravel Sanctum
-- SQLite por defecto en local
-- PostgreSQL en Docker
+- PostgreSQL (configurado en `.env.example`)
 - Composer
 - PHPUnit para pruebas
 
@@ -38,6 +37,7 @@ app/
 │       ├── AuthController.php
 │       ├── ArtistController.php
 │       ├── SongController.php
+│       ├── PlaylistController.php
 │       └── Controller.php
 ├── Models/
 │   ├── Artist.php
@@ -78,7 +78,7 @@ Todas las rutas de la API se exponen bajo el prefijo `/api`.
 | `POST` | `/api/dmusic/login` | Inicia sesión y devuelve un token |
 | `GET` | `/api/dmusic/get-songs` | Obtiene todas las canciones |
 | `GET` | `/api/dmusic/get-artists` | Obtiene todos los artistas |
-| `POST` | `/api/dmusic/search-song/{id}` | Busca canciones por coincidencia parcial en el título |
+| `GET` | `/api/dmusic/search-song/{query}` | Busca canciones por coincidencia parcial en el título |
 
 ### Protegidas con autenticación
 
@@ -90,10 +90,10 @@ Authorization: Bearer <token>
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| `POST` | `/api/dmusic/play-song/{id}` | Reproduce la canción seleccionada y el resto del listado |
-| `POST` | `/api/dmusic/play-artist/{id}` | Obtiene las canciones de un artista |
-| `POST` | `/api/dmusic/play-library/{id}` | Reproduce la librería del usuario con una canción destacada primero |
-| `POST` | `/api/dmusic/get-favorite-songs` | Devuelve las canciones favoritas del usuario |
+| `GET` | `/api/dmusic/play-song/{id}` | Obtiene el listado de canciones con la seleccionada primero |
+| `GET` | `/api/dmusic/play-artist/{id}` | Obtiene las canciones de un artista |
+| `GET` | `/api/dmusic/play-library/{id}` | Obtiene la librería con una canción destacada primero |
+| `GET` | `/api/dmusic/get-favorite-songs` | Devuelve las canciones favoritas del usuario |
 | `POST` | `/api/dmusic/add-favorite-song/{id}` | Añade una canción a favoritos |
 | `DELETE` | `/api/dmusic/delete-favorite-song/{id}` | Elimina una canción de favoritos |
 
@@ -151,43 +151,36 @@ curl -X POST http://localhost:8000/api/dmusic/add-favorite-song/1 \
 
 ### 1. Requisitos del sistema
 
-- PHP 8.1 o superior
-- Node.js 18 o superior
+- PHP 8.2 o superior con la extensión `pdo_pgsql`
 - PostgreSQL 14 o superior
 - Composer
-- npm (incluido con Node.js)
+- Para compilar los recursos con Vite: Node.js 20.19+ o 22.12+ y npm
 
 ### 2. Preparación del proyecto
 
-1. Descarga el archivo ZIP del proyecto.
-2. Extrae su contenido en la carpeta donde quieras instalarlo.
-3. Abre una terminal y navega hasta la carpeta del proyecto:
+Descarga o clona el proyecto y abre una terminal en su carpeta:
 
 ```bash
-cd /ruta/donde/extraiste/el/proyecto
+cd /ruta/al/proyecto/dmusic-back
 ```
 
 ### 3. Instalación del Backend (Laravel)
 
-#### 3.1 Acceder al backend
-
-```bash
-cd dmusic-back
-```
-
-#### 3.2 Instalar dependencias
+#### 3.1 Instalar dependencias
 
 ```bash
 composer install
 ```
 
-#### 3.3 Crear archivo .env
+#### 3.2 Crear archivo .env
+
+Si todavía no existe `.env`, créalo a partir del ejemplo. No sobrescribas un archivo existente.
 
 ```bash
 cp .env.example .env
 ```
 
-#### 3.4 Configurar el archivo .env
+#### 3.3 Configurar el archivo .env
 
 Abre el archivo `.env` y asegúrate de que los valores principales estén así:
 
@@ -195,7 +188,7 @@ Abre el archivo `.env` y asegúrate de que los valores principales estén así:
 APP_NAME=DMusic
 APP_ENV=local
 APP_DEBUG=true
-APP_URL=http://localhost
+APP_URL=http://localhost:8000
 
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
@@ -210,34 +203,37 @@ CORS_ALLOWED_ORIGINS=http://localhost:5173
 Notas importantes:
 
 - Si tu PostgreSQL tiene contraseña, colócala en `DB_PASSWORD`.
-- No es necesario modificar otras variables del `.env.example` salvo que tengas requisitos especiales.
-- El valor `CORS_ALLOWED_ORIGINS=http://localhost:5173` es correcto para el frontend.
+- Ajusta `CORS_ALLOWED_ORIGINS` a la dirección desde la que se ejecuta el frontend.
 
-#### 3.5 Generar clave de aplicación
+#### 3.4 Generar clave de aplicación
 
 ```bash
 php artisan key:generate
 ```
 
-#### 3.6 Crear la base de datos
+Genera la clave solo si todavía no tienes una; no la cambies en una instalación existente.
+
+#### 3.5 Crear la base de datos
 
 Antes de ejecutar las migraciones, asegúrate de que la base de datos `dmusic_db` exista en PostgreSQL.
 
 Si no la tienes creada, crea la base desde pgAdmin o desde la línea de comandos con tu cliente PostgreSQL.
 
-#### 3.7 Ejecutar migraciones y seeds
+#### 3.6 Ejecutar migraciones
 
 ```bash
-php artisan migrate --seed
+php artisan migrate
 ```
 
-#### 3.8 Crear enlace simbólico de almacenamiento
+El seeder actual crea un usuario de prueba y no carga canciones ni artistas. No es necesario ejecutarlo para instalar el proyecto.
+
+#### 3.7 Crear enlace simbólico de almacenamiento
 
 ```bash
 php artisan storage:link
 ```
 
-#### 3.9 Iniciar el servidor del backend
+#### 3.8 Iniciar el servidor del backend
 
 ```bash
 php artisan serve
@@ -251,7 +247,7 @@ http://localhost:8000
 
 ### 4. Importación de datos (Canciones y Artistas)
 
-Este script es obligatorio para que la aplicación muestre datos.
+Para cargar el catálogo de ejemplo, ejecuta el script después de las migraciones.
 
 1. Abre PostgreSQL o pgAdmin (o tu cliente de base de datos preferido).
 2. Conéctate usando los datos del `.env`:
@@ -259,27 +255,18 @@ Este script es obligatorio para que la aplicación muestre datos.
    - Puerto: `5432`
    - Usuario: `postgres`
    - Contraseña: la que corresponda
-3. Abre el archivo `dmusic-back/script.sql`.
+3. Abre el archivo `script.sql` desde la carpeta del proyecto.
 4. Copia todo su contenido y pégalo en una consulta nueva.
-5. Ejecuta el script.
+5. Asegúrate de que la consulta está conectada a la base `dmusic_db` y ejecuta el script una sola vez sobre una base recién creada. Las canciones usan IDs fijos de artistas; volver a ejecutar el script puede crear duplicados o asociaciones incorrectas.
 6. Verifica que las tablas `artists` y `songs` tengan registros.
 
 ## Uso con Docker
 
-El proyecto incluye un `docker-compose.yml` con un contenedor para la app y otro para PostgreSQL.
+El `Dockerfile` instala PHP, las extensiones de PostgreSQL y MySQL y las dependencias de Composer. El `docker-compose.yml` también define una base de datos PostgreSQL local.
 
-```bash
-docker compose up --build
-```
+La configuración de Compose necesita revisión antes de utilizarla: publica el puerto `80` del contenedor, mientras que la aplicación escucha en el `8000`. Además, el montaje del proyecto sobre `/var/www` puede ocultar las dependencias instaladas en la imagen. La contraseña del archivo Compose es solo de ejemplo y no debe usarse en producción.
 
-Esto levanta la API y la base de datos PostgreSQL en los puertos `8000` y `5432` respectivamente.
-
-Si es la primera vez, puede que necesites ejecutar:
-
-```bash
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate --seed
-```
+Para un despliegue con Render se utiliza el `Dockerfile`; no es necesario usar Compose si PostgreSQL está alojado por separado. Configura en Render las variables de entorno de la aplicación y la conexión a la base de datos, y ejecuta las migraciones contra la base correcta. El servidor `php artisan serve` del Dockerfile está orientado al desarrollo; para producción conviene utilizar un servidor como Nginx con PHP-FPM.
 
 ## Notas de desarrollo
 

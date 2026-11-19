@@ -8,10 +8,18 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\JsonResponse;
 use Exception;
+
 
 class AuthController extends Controller
 {
+    /**
+     * Autenticar a un usuario y generar su token de acceso.
+     *
+     * @param Request $request Contiene el correo electrónico y la contraseña
+     * @return JsonResponse
+     */
     public function index(Request $request)
     {
         try {
@@ -83,6 +91,12 @@ class AuthController extends Controller
     //     }
     // }
 
+    /**
+     * Registrar un usuario nuevo.
+     *
+     * @param Request $request Contiene el nombre, correo electrónico y contraseña
+     * @return JsonResponse
+     */
     public function store(Request $request)
     {
         try {
